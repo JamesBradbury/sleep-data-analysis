@@ -6,7 +6,7 @@ import pandas as pd
 from csv import DictReader
 
 essential_columns = {'Date', 'Exercise (1-5)', 'Hours that night'}
-data_filename = 'local_data/sleepdata_28Jul2017.csv'
+data_filename = 'local_data/sleepdata_20Aug2017.csv'
 
 # Test we can read the CSV ok.
 with open(file=data_filename) as csv_file:
@@ -19,3 +19,4 @@ df = pd.read_csv(data_filename, index_col='Date', parse_dates=True)
 # df['H-L'] = df.High - df.Low
 
 print(df.describe())
+print(df.corr())
