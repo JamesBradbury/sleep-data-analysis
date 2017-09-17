@@ -12,7 +12,7 @@ target_sleep = float(8)
 hours_noise_threshold = float(0.6)
 
 
-def missed_sleep_scaled(row):
+def enrich_missed_sleep(row):
     useful_max = min(target_sleep, row['Max possible (hrs)'])
     if useful_max == float(0):
         # result is invalid.
@@ -41,31 +41,25 @@ def analyse_sleep():
         for index, csv_row in enumerate(DictReader(f=csv_file)):
             csv_row = {k: try_float(v) for k, v in csv_row.items()}
             if all([csv_row[c] for c in essential_columns]):
+                csv_row['MSScaled'] = enrich_missed_sleep(csv_row)
                 if float(csv_row['Hours that night']) > float(csv_row['Max possible (hrs)']):
                     print("WARNING: Hours {} more than maximum {} for {}".format(csv_row['Hours that night'],
                                                                                  csv_row['Max possible (hrs)'],
                                                                                  csv_row['Date']))
                 print("{}, {}, {}".format(csv_row['Max possible (hrs)'], csv_row['Hours that night'],
-                                          missed_sleep_scaled(csv_row)))
-                if float(csv_row['Max possible (hrs)']) < float(6):
-                    continue
-                if float(csv_row['Missed sleep']) < float(0.25):
-                    # print("Rounding down {} for {}".format(row['Missed sleep'], row['Date']))
-                    csv_row['Missed sleep'] = float(0)
+                                          enrich_missed_sleep(csv_row)))
                 input_list_of_dicts.append(csv_row)
 
-    df_csv = pd.read_csv(data_filename, parse_dates=True, infer_datetime_format=True)
-    print(set(df_csv.columns.values))
     df_from_dict = pd.DataFrame(input_list_of_dicts, dtype=float)
     df_from_dict.set_index('Date')
     print(set(df_from_dict))
 
     df_from_dict.dropna(subset=list(essential_columns), inplace=True)
-    print('Missed sleep:-', df_from_dict['Missed sleep'])
+    print('MSScaled:-', df_from_dict['MSScaled'])
 
     correlation = df_from_dict.corr()
     print(list(correlation))
-    ms = correlation['Missed sleep']
+    ms = correlation['MSScaled']
     ms_sorted = ms.sort_values()
 
     for i, j in ms_sorted.iteritems():
@@ -79,4 +73,4 @@ def analyse_sleep():
     # names = [n for n in dir(df.corr()) if not n.startswith('_')]
 
 
-
+analyse_sleep()
