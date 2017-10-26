@@ -73,4 +73,5 @@ def analyse_sleep():
     # names = [n for n in dir(df.corr()) if not n.startswith('_')]
 
 
-analyse_sleep()
+if __name__ == "__main__":
+    analyse_sleep()
