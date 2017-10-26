@@ -23,7 +23,6 @@ def enrich_missed_sleep(row):
         useful_missed_reduced_noise = float(0)
     else:
         useful_missed_reduced_noise = useful_missed_sleep
-    print("useful_missed_reduced_noise:", useful_missed_reduced_noise)
     return float(10) * useful_missed_reduced_noise / useful_max
 
 
