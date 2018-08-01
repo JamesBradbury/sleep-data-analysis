@@ -13,17 +13,16 @@ hours_noise_threshold = float(0.6)
 
 
 def enrich_missed_sleep(row):
-    useful_max = min(target_sleep, row['Max possible (hrs)'])
-    if useful_max == float(0):
+    max_expected_hours = min(target_sleep, row['Max possible (hrs)'])
+    if max_expected_hours == float(0):
         # result is invalid.
         return -1
-    max_expected_hours = min(target_sleep, row['Max possible (hrs)'])
     useful_missed_sleep = max_expected_hours - min(row['Hours that night'], target_sleep)
     if useful_missed_sleep <= hours_noise_threshold:
         useful_missed_reduced_noise = float(0)
     else:
         useful_missed_reduced_noise = useful_missed_sleep
-    return float(10) * useful_missed_reduced_noise / useful_max
+    return float(10) * useful_missed_reduced_noise / max_expected_hours
 
 
 def try_float(s):
@@ -65,6 +64,12 @@ def analyse_sleep():
         print(i.strip() + ', ' + str(j).strip())
     print('----')
     print(ms_sorted)
+
+    # recovery = correlation['EMFit total recovery']
+    # tr_sorted = recovery.sort_values()
+    # for i, j in tr_sorted.items():
+    #     print(i.strip() + ', ' + str(j).strip())
+    # print('----')
 
     # htn = correlation['Hours that night']
     # htn_sorted = htn.sort_values()
